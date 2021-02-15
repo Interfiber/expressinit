@@ -1,5 +1,5 @@
 {
-  "name": "expressinit",
+  "name": "@interfiber/expressinit",
   "version": "1.0.0",
   "description": "Generate a basic express app with sensible preinstalled packages",
   "main": "main.js",
