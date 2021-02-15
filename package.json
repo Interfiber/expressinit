@@ -1,0 +1,17 @@
+{
+  "name": "expressinit",
+  "version": "1.0.0",
+  "description": "Generate a basic express app with sensible preinstalled packages",
+  "main": "main.js",
+  "author": "Interfiber",
+  "license": "MIT",
+  "bin": {
+    "expressinit": "./main.js"
+  },
+  "dependencies": {
+    "commander": "^7.1.0",
+    "esformatter": "^0.11.3",
+    "inquirer": "^7.3.3",
+    "shelljs": "^0.8.4"
+  }
+}
