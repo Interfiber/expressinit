@@ -20,15 +20,16 @@ function createApp(){
     if (answer.confirmapp == true){
       console.log("Creating package.json...");
       let pkgjson = JSON.stringify({
-        name: "Package Name",
-        version: "",
-        description: "",
+        name: "express_app",
+        version: "0.0.1",
+        description: "A Basic Express app bootstraped by @interfiber/expressinit",
         main: "main.js",
         scripts: {
+          "dev": "nodemon main.js",
           "start": "node main.js"
         },
-        author: "",
-        license: ""
+        author: "Interfiber",
+        license: "MIT"
       }, null, 4);
       fs.writeFileSync("package.json", pkgjson);
       console.log("Installing packages...");
@@ -38,6 +39,8 @@ function createApp(){
       })
       console.log("Installing express...");
       shelljs.exec("npm i express &>/dev/null");
+      console.log("Installing nodemon into dev...");
+      shelljs.exec("npm i --save-dev nodemon &>/dev/null");
       console.log("Creating main.js...");
       let requires = 'const express = require("express")\nconst app = express();'
       if (isStatic) {
@@ -48,6 +51,8 @@ function createApp(){
           requires += `\nlet ${dep.replace("-", "_")} = require("${dep}")\napp.use(${dep.replace("-", "_")}.urlencoded({ extended: true }))\napp.use(${dep.replace("-", "_")}.json())`
         }else if (dep == "dotenv"){
           requires += `\nlet dotenv = require("dotenv").config()`
+        }else if (dep == "morgan"){
+          requires += `\nlet morgan = require("morgan")\napp.use(morgan("tiny"))`
         }else {
           requires += `\nlet ${dep.replace("-", "_")} = require("${dep}")\napp.use(${dep.replace("-", "_")}())`
         }
@@ -92,7 +97,10 @@ function chooseDeps(){
       "helmet",
       "express-fileupload",
       "multer",
-      "dotenv"
+      "dotenv",
+      "helmet",
+      "morgan",
+      "vhost"
     ]
   }]).then(answer => {
     deps = answer.dependencies;
