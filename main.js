@@ -4,6 +4,7 @@
 
 const inquirer = require("inquirer");
 const fs = require("fs");
+const ora = require("ora");
 const shelljs = require("shelljs");
 const esformatter = require('esformatter');
 let isApi = false;
@@ -18,7 +19,9 @@ function createApp(){
     default: true
   }]).then(answer => {
     if (answer.confirmapp == true){
-      console.log("Creating package.json...");
+      // Create a fancy progress spinner
+      const spinner = ora('Generating App...').start();
+      spinner.color = 'cyan';
       let pkgjson = JSON.stringify({
         name: "express_app",
         version: "0.0.1",
@@ -32,16 +35,11 @@ function createApp(){
         license: "MIT"
       }, null, 4);
       fs.writeFileSync("package.json", pkgjson);
-      console.log("Installing packages...");
       deps.forEach(dep => {
-        console.log(`Installing ${dep}...`);
         shelljs.exec(`npm i ${dep} &>/dev/null`);
       })
-      console.log("Installing express...");
       shelljs.exec("npm i express &>/dev/null");
-      console.log("Installing nodemon into dev...");
       shelljs.exec("npm i --save-dev nodemon &>/dev/null");
-      console.log("Creating main.js...");
       let requires = 'const express = require("express")\nconst app = express();'
       if (isStatic) {
         requires += `\napp.use(express.static("${staticDir}"))`
@@ -63,7 +61,6 @@ function createApp(){
           console.log("App Listening on port 8080(http://localhost:8080)")
       })`
       fs.writeFileSync("main.js.ugly", requires);
-      console.log("Making JS pretty...");
       const codeStr = fs.readFileSync('main.js.ugly').toString();
       const options = {
         indent : {
@@ -79,7 +76,8 @@ function createApp(){
       const formattedCode = esformatter.format(codeStr, options);
       fs.writeFileSync("main.js", formattedCode);
       shelljs.rm("main.js.ugly");
-      console.log("Express app created!");
+      spinner.stop();
+      console.log("🥳 Express app created!");
     }else {
       console.log("Bye!");
       process.exit(1);
