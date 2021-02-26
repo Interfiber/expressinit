@@ -25,7 +25,7 @@ function createApp(){
       let pkgjson = JSON.stringify({
         name: "express_app",
         version: "0.0.1",
-        description: "A Basic Express app bootstraped by @interfiber/expressinit",
+        description: "A Basic Express app bootstrapped by @interfiber/expressinit",
         main: "main.js",
         scripts: {
           "dev": "nodemon main.js",
