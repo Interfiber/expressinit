@@ -5,8 +5,8 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const ora = require("ora");
-const shelljs = require("shelljs");
 const esformatter = require('esformatter');
+const { execSync } = require('child_process');
 let isApi = false;
 let isStatic = false;
 let staticDir = "";
@@ -36,10 +36,10 @@ function createApp(){
       }, null, 4);
       fs.writeFileSync("package.json", pkgjson);
       deps.forEach(dep => {
-        shelljs.exec(`npm i ${dep} &>/dev/null`);
+        execSync(`npm i ${dep} &>/dev/null`);
       })
-      shelljs.exec("npm i express &>/dev/null");
-      shelljs.exec("npm i --save-dev nodemon &>/dev/null");
+      execSync("npm i express &>/dev/null");
+      execSync("npm i --save-dev nodemon &>/dev/null");
       let requires = 'const express = require("express")\nconst app = express();'
       if (isStatic) {
         requires += `\napp.use(express.static("${staticDir}"))`
@@ -75,7 +75,7 @@ function createApp(){
       }
       const formattedCode = esformatter.format(codeStr, options);
       fs.writeFileSync("main.js", formattedCode);
-      shelljs.rm("main.js.ugly");
+      execSync("rm main.js.ugly")
       spinner.stop();
       console.log("🥳 Express app created!");
     }else {
