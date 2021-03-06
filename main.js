@@ -10,8 +10,29 @@ const { execSync } = require('child_process');
 let isApi = false;
 let isStatic = false;
 let staticDir = "";
+let pkgManager = "npm";
+let installArg = "install";
 let deps = [];
+function askPkgManager(){
+  inquirer.prompt([{
+    type: "list",
+    name: "pkgManager",
+    message: "Choose Package Manager",
+    choices: [
+      "yarn",
+      "npm",
+      "pnpm"
+    ]
+  }]).then((answers) => {
+    pkgManager = answers.pkgManager;
+    if (pkgManager == "yarn"){
+      installArg = "add";
+    }
+    createApp();
+  })
+}
 function createApp(){
+  // First Prompt for pkg manager
   inquirer.prompt([{
     type: 'confirm',
     name: "confirmapp",
@@ -36,10 +57,14 @@ function createApp(){
       }, null, 4);
       fs.writeFileSync("package.json", pkgjson);
       deps.forEach(dep => {
-        execSync(`npm i ${dep} &>/dev/null`);
+        execSync(`${pkgManager} ${installArg} ${dep} &>/dev/null`);
       })
-      execSync("npm i express &>/dev/null");
-      execSync("npm i --save-dev nodemon &>/dev/null");
+      execSync(`${pkgManager} ${installArg} express &>/dev/null`);
+      if (pkgManager == "yarn"){
+        execSync("yarn add -D nodemon &>/dev/null");
+      }else {
+        execSync(`${pkgManager} ${installArg} --save-dev nodemon &>/dev/null`);
+      }
       let requires = 'const express = require("express")\nconst app = express();'
       if (isStatic) {
         requires += `\napp.use(express.static("${staticDir}"))`
@@ -102,7 +127,7 @@ function chooseDeps(){
     ]
   }]).then(answer => {
     deps = answer.dependencies;
-    createApp();
+    askPkgManager();
   });
 }
 function askStaticDir(){
